@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Warung Murid Stewa - Makanan Khas Indonesia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="assets/img/logo.png" />
+    <link rel="stylesheet" href="assets/style/style.css" />
+    <meta name="discount" content="0.00" />
+    <script src="../cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta property="og:title" content="Warung Murid Stewa - Makanan Khas Indonesia">
+    <meta property="og:description" content="Sajikan cita rasa otentik masakan Indonesia langsung ke pintu Anda. Pesan sekarang!">
+    <meta property="og:image" content="https://example.com/assets/img/indonesian_food_banner.jpg">
+    <meta property="og:url" content="https://yourfoodwebsite.com/">
+    <style>
+        .food-price {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .food-price .original-price {
+            text-decoration: line-through;
+            color: #ff0101;
+            display: block;
+            font-size: 16px;
+        }
+
+        .food-price .discounted-price {
+            font-weight: bold;
+            font-size: 25px;
+            color: #000;
+        }
+
+        /* Gaya untuk keranjang belanja */
+        .cart-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #567472;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff0000;
+            color: white;
+            font-size: 14px;
+            border-radius: 50%;
+            padding: 5px 9px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        /* Gaya untuk modal keranjang */
+        .swal2-container.swal2-backdrop-show {
+            backdrop-filter: blur(5px);
+            /* Memastikan backdrop blur berfungsi */
+        }
+
+        .swal2-html-container {
+            text-align: left !important;
+        }
+
+        .cart-item-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+            /* Untuk scrollbar */
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-name {
+            flex-grow: 1;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item-controls button {
+            background-color: #567472;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 8px;
+            cursor: pointer;
+        }
+
+        .cart-item-controls button:hover {
+            opacity: 0.8;
+        }
+
+        .cart-summary {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <input type="checkbox" id="check" />
+        <label for="check" class="checkbtn">
+            <img src="assets/img/button.svg" />
+        </label>
+        <label class="logo">Warung Murid Stewa</label>
+        <ul>
+            <li><a class="active" href="#">Beranda</a></li>
+            <li><a href="https://wa.me/6285727890679">Pesan Via WhatsApp</a></li>
+        </ul>
+    </nav>
+
+    <div class="header">
+        <div class="text">
+            <h1 id="customerName">Selamat Datang!</h1>
+            <p>Nikmati hidangan lezat khas Indonesia. Siap antar ke mana saja!</p>
+            <div class="action">
+                <a class="button" id="orderNow">Pesan Sekarang!</a>
+            </div>
+        </div>
+        <div class="banner"></div>
+    </div>
+
+    <div class="container">
+
+        <div class="food-list">
+            <div class="food-item" data-id="1" data-name="Nasi Goreng Spesial" data-price="25000">
+                <img src="assets/img/nasi_goreng.jpg" alt="Nasi Goreng" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Nasi Goreng Spesial</b><br>Nasi goreng dengan telur, ayam, dan kerupuk</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+            <div class="food-item" data-id="2" data-name="Sate Ayam Madura" data-price="30000">
+                <img src="assets/img/sate.jpg" alt="Sate Ayam" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Sate Ayam Madura</b><br>10 tusuk sate ayam dengan bumbu kacang</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+            <div class="food-item" data-id="3" data-name="Mie Ayam Bakso" data-price="28000">
+                <img src="assets/img/mie_ayam.jpg" alt="Mie Ayam" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Mie Ayam Bakso</b><br>Mie dengan ayam cincang dan bakso</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+            <div class="food-item" data-id="4" data-name="Es Teh Manis" data-price="20000">
+                <img src="assets/img/esteh.jpg" alt="Es Teh Manis" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Es Teh Manis</b><br>Minuman segar pelepas dahaga</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+            <div class="food-item" data-id="5" data-name="Rendang Sapi" data-price="35000">
+                <img src="assets/img/rendang.jpg" alt="Rendang Sapi" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Rendang Sapi</b><br>Daging sapi empuk dengan bumbu khas Padang</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+            <div class="food-item" data-id="6" data-name="Gado-Gado Siram" data-price="22000">
+                <img src="assets/img/gado_gado.jpg" alt="Gado-Gado" style="width:100%; height: auto; border-radius: 15px;">
+                <p><b>Gado-Gado Siram</b><br>Sayuran segar dengan siraman bumbu kacang</p>
+                <div class="food-price">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-icon" id="cartIcon">
+        🛒<span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <footer class="footer">
+        <p id="cntl">&copy; <a href="#">2024 Warung Murid Stewa. Semua Hak Dilindungi.</a></p>
+    </footer>
+
+    <iframe id="trakteerIframe" src="" style="display: none;"></iframe>
+
+    <script>
+        const discount = parseFloat(document.querySelector('meta[name="discount"]').content || "0");
+
+        // Ubah label judul navbar kalau ada diskon
+        const logoLabel = document.querySelector(".logo");
+        if (discount > 0) {
+            logoLabel.textContent += ` | Diskon ${Math.round(discount * 100)}%`;
+        }
+
+        // Tampilkan harga asli dicoret + harga diskon
+        document.querySelectorAll(".food-item").forEach(item => {
+            const basePrice = parseInt(item.getAttribute("data-price"));
+            const finalPrice = Math.round(basePrice * (1 - discount));
+
+            const original = `<span class="original-price">Rp ${basePrice.toLocaleString("id-ID")}</span>`;
+            const discounted = `<span class="discounted-price">Rp ${finalPrice.toLocaleString("id-ID")}`;
+
+            if (discount > 0) {
+                item.querySelector(".food-price p").innerHTML = original + discounted;
+            } else {
+                item.querySelector(".food-price p").textContent = `Rp ${basePrice.toLocaleString("id-ID")}`;
+            }
+        });
+
+        // Basic "Order Now" functionality (replace with real e-commerce logic later)
+        document.getElementById("orderNow").addEventListener("click", function() {
+            Swal.fire({
+                title: 'Silakan Pilih Menu!',
+                text: 'Klik item makanan di bawah untuk detail lebih lanjut atau hubungi kami.',
+                icon: 'info',
+                background: "rgb(29, 28, 28)",
+                color: "#fff",
+                confirmButtonText: 'Oke'
+            });
+        });
+    </script>
+    <script src="assets/js/home.js"></script>
+</body>
+
+</html>
